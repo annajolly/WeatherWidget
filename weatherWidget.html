@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head> 
+  <title>My Weather</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="author" content="Anna Jolly">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet" type="text/css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+
+<style>
+
+body {
+  color: grey;
+  background: rgb(211, 250, 251);
+  font-family: 'Muli';
+}
+
+#widget {
+  margin-top: 40px;
+  padding-bottom: 30px;
+  background: white;
+  border-radius: 40px;
+  border: 1px solid white;
+  box-shadow: 0 0 30px white;
+}
+
+h1 {
+  font-size: 60px;
+}
+
+h2 {
+  font-size: 40px;
+}
+
+#title {
+  padding-top: 20px;
+}
+
+#temp {
+  font-size: 80px;
+}
+
+#desc {
+  font-size: 20px;
+}
+
+#loc {
+  font-size: 20px;
+}
+
+#units {
+  text-align: right;
+}
+
+</style>
+
+<script>
+
+var tempC;
+var tempF;
+var isC = true;
+
+$(function() {
+  //get location
+  var location = "http://ip-api.com/json";
+  $.getJSON(location, function(data) {
+    var lat = data.lat;
+    var lon = data.lon;
+ //load weather api
+ //$.getJSON("http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=3e172571a964dfcfbbf1e329e353aef5", function(data) {
+    $.getJSON("http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=3e172571a964dfcfbbf1e329e353aef5", function(data) {
+      //get relevant info
+      var city = data.name;
+      var country = data.sys.country;
+      var div = document.getElementById('loc');
+      div.innerHTML = '<center>' + city + ', ' + country + '</center>';
+      var tempK = data.main.temp;
+      tempC = Math.round((tempK - 273.15));
+      tempF = Math.round(tempC*9/5+32);
+      div = document.getElementById('temp');
+      div.innerHTML = '<center>' + tempC + '&deg;' + 'C</center>';
+      var icon = data.weather[0].icon;
+      div = document.getElementById( 'icon' );
+      div.innerHTML = '<center><img src="http://openweathermap.org/img/w/' + icon + '.png" height="100px"></center>';
+      var des = data.weather[0].description;
+   //capitalize first letter of each word
+   var desAr = des.split(" ");
+   var capDes = "";
+   for (var i=0; i<desAr.length; i++) {
+     capDes += desAr[i][0].toUpperCase();
+     capDes += desAr[i].slice(1,desAr[i].length) + " ";
+   }
+    div = document.getElementById('desc');
+    div.innerHTML = '<center>' + capDes + '</center>';
+    })
+  })
+});
+
+$(document).ready(function() {
+    $("#getMessage").on("click", function(){
+      // Only change code below this line.
+      if(isC) {
+        $("#temp").html("<center>" + tempF + '&deg;' + "F</center>");
+        $("#getMessage").html('&deg;C');
+        isC=false;
+      }
+      else {
+        $("#temp").html("<center>" + tempC + '&deg;' + "C</center>");
+        $("#getMessage").html('&deg;F');
+        isC=true;
+      }
+    });
+  });
+
+</script>
+
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <div id="title" class="col-xs-12">
+      <center><h1>My Weather</h1></center>
+    </div>
+    <div class="col-sm-3">
+    </div>
+    <div id="widget" class="col-xs-12 col-sm-6">
+      <div class="col-xs-7"></div>
+      <div id="icon" class="col-xs-5"></div>
+      <div class="col-xs-7">
+        <div id="temp" class="col-xs-12"></div>
+        <div id="desc" class="col-xs-12"></div>
+      </div>
+      <div class="col-xs-5"></div>
+      <div id="loc" class="col-xs-7"></div>
+      <div id="units" class="col-xs-5">
+        <button id = "getMessage" class = "btn btn-default">
+        &deg;F
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+</body>
+</html>
